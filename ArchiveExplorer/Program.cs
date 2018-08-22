@@ -19,9 +19,6 @@ namespace Archive
 
             archives.AddType(new ZipArchiveType());
 
-            // var file = root.GetFile(@"W:\Notes\VFS.txt");
-            // var file = root.GetFile(@"https://www.sample-videos.com/text/Sample-text-file-10kb.txt");
-            // var file = root.GetFile(@"awdads");
 #if false
             {
                 var file = root.GetFile(@"https://www.sample-videos.com/zip/10mb.zip");
@@ -40,12 +37,14 @@ namespace Archive
             }
 #endif
 
-#if false
+#if true
             {
                 var inputFile = root.GetFile(@"https://ci.appveyor.com/api/buildjobs/bcm5wji44wsg2eye/artifacts/Release-0.12.0.40.zip");
                 var outputFile = root.GetFile(@"W:\test.zip");
 
                 inputFile.CopyTo(outputFile);
+
+                Console.WriteLine("Length: {0}", outputFile.Length);
             }
 #endif
         }

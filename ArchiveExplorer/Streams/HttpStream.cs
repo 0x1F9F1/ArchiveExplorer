@@ -25,8 +25,12 @@ namespace Archive.Web
                 {
                     return length_.Value;
                 }
+                else if (data_ != null)
+                {
+                    return data_.Length;
+                }
 
-                throw new NotSupportedException();
+                throw new NotSupportedException("HTTP Stream does not support HEAD");
             }
         }
 
@@ -80,10 +84,19 @@ namespace Archive.Web
             }
             catch (WebException ex)
             {
-                headers = ex.Response.Headers;
+                var response = (HttpWebResponse) ex.Response;
+                
+                if (response.StatusCode == HttpStatusCode.MethodNotAllowed)
+                {
+                    headers = ex.Response.Headers;
 
-                Path = ex.Response.ResponseUri;
-                length_ = null;
+                    Path = ex.Response.ResponseUri;
+                    length_ = null;
+                }
+                else
+                {
+                    throw;
+                }
             }
             finally
             {
