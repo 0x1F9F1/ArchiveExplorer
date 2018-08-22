@@ -22,19 +22,32 @@ namespace Archive
             // var file = root.GetFile(@"W:\Notes\VFS.txt");
             // var file = root.GetFile(@"https://www.sample-videos.com/text/Sample-text-file-10kb.txt");
             // var file = root.GetFile(@"awdads");
-            var file = root.GetFile(@"https://www.sample-videos.com/zip/10mb.zip");
-
-            var archive = (BasicArchive) archives.Open(file);
-
-            foreach (var name in archive.FileNames)
+#if false
             {
-                Console.WriteLine("File: {0}", name);
+                var file = root.GetFile(@"https://www.sample-videos.com/zip/10mb.zip");
+
+                var archive = (BasicArchive) archives.Open(file);
+
+                foreach (var name in archive.FileNames)
+                {
+                    Console.WriteLine("File: {0}", name);
+                }
+
+                var inputFile = archive.GetFile("big_buck_bunny_240p_10mb.mp4");
+                var outputFile = root.GetFile(@"W:\test.mp4");
+
+                inputFile.CopyTo(outputFile);
             }
+#endif
 
-            var inputFile = archive.GetFile("big_buck_bunny_240p_10mb.mp4");
-            var outputFile = root.GetFile(@"W:\test.mp4");
+#if false
+            {
+                var inputFile = root.GetFile(@"https://ci.appveyor.com/api/buildjobs/bcm5wji44wsg2eye/artifacts/Release-0.12.0.40.zip");
+                var outputFile = root.GetFile(@"W:\test.zip");
 
-            inputFile.CopyTo(outputFile);
+                inputFile.CopyTo(outputFile);
+            }
+#endif
         }
     }
 }

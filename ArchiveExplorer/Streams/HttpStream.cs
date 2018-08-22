@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Archive.Common;
+using System;
 using System.IO;
 using System.Net;
 
@@ -7,13 +8,27 @@ namespace Archive.Web
     public class HttpStream : Stream
     {
         protected long position_;
+        protected long? length_;
+        protected byte[] data_;
 
         public Uri Path { get; }
 
-        public override bool CanRead => true;
+        public override bool CanRead { get; }
         public override bool CanSeek { get; }
-        public override bool CanWrite => false;
-        public override long Length { get; }
+        public override bool CanWrite { get; }
+
+        public override long Length
+        {
+            get
+            {
+                if (length_.HasValue)
+                {
+                    return length_.Value;
+                }
+
+                throw new NotSupportedException();
+            }
+        }
 
         public override long Position
         {
@@ -27,25 +42,68 @@ namespace Archive.Web
             }
         }
 
-        public HttpStream(Uri path)
+        protected int ReadCachedData(byte[] buffer, int offset, int count)
         {
-            var request = (HttpWebRequest)WebRequest.Create(path);
-
-            request.Method = "HEAD";
-
-            using (var response = (HttpWebResponse)request.GetResponse())
+            if ((position_ + count) > data_.Length)
             {
-                Path = response.ResponseUri;
-                Length = response.ContentLength;
-                CanSeek = response.Headers["Accept-Ranges"]?.Equals("bytes") ?? false;
+                count = data_.Length - (int)position_;
             }
 
+            Array.Copy(data_, position_, buffer, offset, count);
+
+            position_ += count;
+
+            return count;
+        }
+
+        public HttpStream(Uri path)
+        {
+            Path = path;
+            length_ = null;
             position_ = 0;
+
+            WebHeaderCollection headers = null;
+
+            try
+            {
+                var request = (HttpWebRequest)WebRequest.Create(path);
+
+                request.Method = "HEAD";
+
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    headers = response.Headers;
+
+                    Path = response.ResponseUri;
+                    length_ = response.ContentLength;
+                }
+            }
+            catch (WebException ex)
+            {
+                headers = ex.Response.Headers;
+
+                Path = ex.Response.ResponseUri;
+                length_ = null;
+            }
+            finally
+            {
+                var allow = headers?["Allow"];
+                CanRead = allow?.Contains("GET") ?? false;
+                CanWrite = allow?.Contains("PUT") ?? false;
+
+                var accept = headers?["Accept-Ranges"];
+                CanSeek = accept?.Equals("bytes") ?? false;
+            }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (count > 0)
+            if (count <= 0)
+            {
+                return 0;
+            }
+
+            if (CanSeek)
             {
                 var request = (HttpWebRequest)WebRequest.Create(Path);
 
@@ -61,34 +119,45 @@ namespace Archive.Web
                 }
 
                 using (var response = (HttpWebResponse)request.GetResponse())
+                using (var stream = response.GetResponseStream())
                 {
-                    using (var stream = response.GetResponseStream())
+                    int total = 0;
+
+                    while ((total < count) && (total < response.ContentLength))
                     {
-                        int total = 0;
+                        int read = stream.Read(buffer, offset + total, count - total);
 
-                        while ((total < count) && (total < response.ContentLength))
+                        if (read > 0)
                         {
-                            int read = stream.Read(buffer, offset + total, count - total);
-
-                            if (read > 0)
-                            {
-                                total += read;
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            total += read;
                         }
-
-                        position_ += total;
-
-                        return total;
+                        else
+                        {
+                            break;
+                        }
                     }
+
+                    position_ += total;
+
+                    return total;
                 }
             }
             else
             {
-                return 0;
+                if (data_ == null)
+                {
+                    var request = (HttpWebRequest)WebRequest.Create(Path);
+
+                    request.Method = "GET";
+
+                    using (var response = (HttpWebResponse)request.GetResponse())
+                    using (var stream = response.GetResponseStream())
+                    {
+                        data_ = Utils.ReadAllBytes(stream);
+                    }
+                }
+
+                return ReadCachedData(buffer, offset, count);
             }
         }
 

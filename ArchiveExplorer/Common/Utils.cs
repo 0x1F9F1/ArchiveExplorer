@@ -29,5 +29,29 @@ namespace Archive.Common
 
             return Encoding.ASCII.GetString(bytes, 0, terminator);
         }
+
+        public static byte[] ReadAllBytes(Stream stream)
+        {
+#if false
+        using (var ms = new MemoryStream())
+        {
+            var buffer = new byte[8192];
+
+            for (int read = 0; (read = stream.Read(buffer, 0, buffer.Length)) > 0;)
+            {
+                ms.Write(buffer, 0, read);
+            }
+
+            return ms.ToArray();
+        }
+#else
+            using (var ms = new MemoryStream())
+            {
+                stream.CopyTo(ms);
+
+                return ms.ToArray();
+            }
+#endif
+        }
     }
 }
