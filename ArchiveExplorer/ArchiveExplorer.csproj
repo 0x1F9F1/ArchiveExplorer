@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CCE3D3AB-EFBE-4C5B-82E7-CBBDDE62AEF3}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ArchiveExplorer</RootNamespace>
+    <RootNamespace>Archive</RootNamespace>
     <AssemblyName>ArchiveExplorer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -42,8 +42,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Archives\ArchiveManager.cs" />
+    <Compile Include="Archives\Basic\BasicArchive.cs" />
+    <Compile Include="Archives\Basic\BasicDeflatedFile.cs" />
+    <Compile Include="Archives\Basic\BasicStoredFile.cs" />
+    <Compile Include="Common\BasicFile.cs" />
+    <Compile Include="Devices\Http\HttpFile.cs" />
+    <Compile Include="Devices\Local\LocalDirectory.cs" />
+    <Compile Include="Devices\Local\LocalFile.cs" />
+    <Compile Include="Interfaces\IArchive.cs" />
+    <Compile Include="Interfaces\IArchiveType.cs" />
+    <Compile Include="Interfaces\IDevice.cs" />
+    <Compile Include="Interfaces\IDirectory.cs" />
+    <Compile Include="Interfaces\IFile.cs" />
+    <Compile Include="Interfaces\INode.cs" />
+    <Compile Include="Devices\Http\HttpDevice.cs" />
+    <Compile Include="Streams\HttpStream.cs" />
+    <Compile Include="Streams\InflateStream.cs" />
+    <Compile Include="Devices\Local\LocalDevice.cs" />
+    <Compile Include="Streams\OffsetStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Devices\RootDevice.cs" />
+    <Compile Include="Common\Utils.cs" />
+    <Compile Include="Archives\Zip\ZipArchive.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
