@@ -5,18 +5,19 @@ namespace Archive.Web
 {
     public class HttpFile : BasicFile
     {
-        protected readonly Uri path_;
         protected readonly Lazy<long> length_;
 
+        public Uri UriPath { get; }
+
         public override long Length => length_.Value;
-        public override string Name => Path.GetFileName(path_.AbsolutePath);
+        public override string Name => Path.GetFileName(UriPath.AbsolutePath);
         public override IDevice Device { get; }
         public override IDirectory Parent => null;
 
-        public HttpFile(Uri path, HttpDevice device)
+        public HttpFile(HttpDevice device, Uri path)
         {
-            path_ = path;
             Device = device;
+            UriPath = path;
 
             length_ = new Lazy<long>(() =>
             {
@@ -39,7 +40,7 @@ namespace Archive.Web
                 return null;
             }
 
-            return new BufferedStream(new HttpStream(path_));
+            return new BufferedStream(new HttpStream(UriPath));
         }
     }
 }

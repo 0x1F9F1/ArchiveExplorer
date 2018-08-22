@@ -50,7 +50,7 @@ namespace Archive.Web
 
             if (uri != null)
             {
-                return new HttpFile(uri, this);
+                return new HttpFile(this, uri);
             }
 
             return null;

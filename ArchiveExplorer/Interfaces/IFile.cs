@@ -10,6 +10,7 @@ namespace Archive
         // Attributes (Read/Write)
         // Date Created/Modified/Accessed
         // Length on Disk (aka Compressed Size)
+        // Type (Local, Remote, Virtual)
 
         Stream Open(FileMode mode, FileAccess access, FileShare share);
 

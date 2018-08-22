@@ -15,12 +15,20 @@ namespace Archive
         protected static int CalculateBufferSize(long compressedLength)
         {
             // TODO: Adjust buffer size based on comprsesed length
+            // TODO: Check if input stream can seek?
 
-            return 1024 * 1024 * 64; // 64 MB
+            int result = 1024 * 1024 * 64; // 64 MB
+
+            if (result > compressedLength)
+            {
+                result = (int) compressedLength;
+            }
+
+            return result;
         }
 
-        public InflateStream(Stream stream, long offset, long length, long compressedLength)
-            : base(new OffsetStream(new BufferedStream(stream, CalculateBufferSize(compressedLength)), offset, compressedLength), CompressionMode.Decompress)
+        public InflateStream(Stream stream, long length)
+            : base(new BufferedStream(stream, CalculateBufferSize(stream.Length)), CompressionMode.Decompress)
         {
             Length = length;
         }

@@ -35,7 +35,7 @@ namespace Archive.Common
                 return null;
             }
 
-            return new InflateStream(Archive.Container.Open(mode, access, share), Offset, Length, CompressedLength);
+            return new InflateStream(new OffsetStream(Archive.Container.Open(mode, access, share), Offset, CompressedLength), Length);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Archive.Local;
 using Archive.Root;
 using Archive.Web;
@@ -25,7 +24,7 @@ namespace Archive
             // var file = root.GetFile(@"awdads");
             var file = root.GetFile(@"https://www.sample-videos.com/zip/10mb.zip");
 
-            var archive = (BasicArchive) archives.Open(file, "ZIP");
+            var archive = (BasicArchive) archives.Open(file);
 
             foreach (var name in archive.FileNames)
             {

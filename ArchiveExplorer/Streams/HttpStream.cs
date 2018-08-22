@@ -6,14 +6,14 @@ namespace Archive.Web
 {
     public class HttpStream : Stream
     {
-        protected readonly Uri path_;
-        protected long length_;
         protected long position_;
 
+        public Uri Path { get; }
+
         public override bool CanRead => true;
-        public override bool CanSeek => true;
+        public override bool CanSeek { get; }
         public override bool CanWrite => false;
-        public override long Length => length_;
+        public override long Length { get; }
 
         public override long Position
         {
@@ -35,8 +35,9 @@ namespace Archive.Web
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
-                path_ = response.ResponseUri;
-                length_ = response.ContentLength;
+                Path = response.ResponseUri;
+                Length = response.ContentLength;
+                CanSeek = response.Headers["Accept-Ranges"]?.Equals("bytes") ?? false;
             }
 
             position_ = 0;
@@ -44,43 +45,50 @@ namespace Archive.Web
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            var request = (HttpWebRequest)WebRequest.Create(path_);
-
-            request.Method = "GET";
-
-            if (position_ == 0)
+            if (count > 0)
             {
-                request.AddRange(count);
+                var request = (HttpWebRequest)WebRequest.Create(Path);
+
+                request.Method = "GET";
+
+                if (position_ == 0)
+                {
+                    request.AddRange(count);
+                }
+                else
+                {
+                    request.AddRange(position_, position_ + count - 1);
+                }
+
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    using (var stream = response.GetResponseStream())
+                    {
+                        int total = 0;
+
+                        while ((total < count) && (total < response.ContentLength))
+                        {
+                            int read = stream.Read(buffer, offset + total, count - total);
+
+                            if (read > 0)
+                            {
+                                total += read;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        position_ += total;
+
+                        return total;
+                    }
+                }
             }
             else
             {
-                request.AddRange(position_, position_ + count);
-            }
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                using (var stream = response.GetResponseStream())
-                {
-                    int total = 0;
-
-                    while ((total < count) && (total < response.ContentLength))
-                    {
-                        int read = stream.Read(buffer, offset + total, count - total);
-
-                        if (read > 0)
-                        {
-                            total += read;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    position_ += total;
-
-                    return total;
-                }
+                return 0;
             }
         }
 
@@ -96,13 +104,13 @@ namespace Archive.Web
                     break;
 
                 case SeekOrigin.End:
-                    offset += length_;
+                    offset += Length;
                     break;
             }
 
-            if (offset > length_)
+            if (offset > Length)
             {
-                offset = length_;
+                offset = Length;
             }
             else if (offset < 0)
             {
@@ -116,12 +124,12 @@ namespace Archive.Web
 
         public override void SetLength(long value)
         {
-            length_ = value;
+            throw new NotSupportedException();
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            var request = (HttpWebRequest)WebRequest.Create(path_);
+            var request = (HttpWebRequest)WebRequest.Create(Path);
 
             request.Method = "PUT";
             request.ContentLength = count;

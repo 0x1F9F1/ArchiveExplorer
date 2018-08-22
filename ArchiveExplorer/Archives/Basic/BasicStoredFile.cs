@@ -13,9 +13,9 @@ namespace Archive.Common
         public override IDevice Device { get; }
         public override IDirectory Parent => Device.Parent;
 
-        public BasicStoredFile(BasicArchive container, string name, long offset, long length)
+        public BasicStoredFile(BasicArchive archive, string name, long offset, long length)
         {
-            Archive = container;
+            Archive = archive;
             Name = name;
             Offset = offset;
             Length = length;

@@ -5,23 +5,14 @@ namespace Archive
 {
     public class OffsetStream : Stream
     {
-        public override bool CanRead => true;
-        public override bool CanSeek => true;
-        public override bool CanWrite => false;
-
         protected readonly Stream parent_;
         protected readonly long start_;
         protected readonly long length_;
-
         protected long position_;
 
-        public OffsetStream(Stream parent, long offset, long length)
-        {
-            parent_ = parent;
-            start_ = offset;
-            length_ = length;
-            position_ = 0;
-        }
+        public override bool CanRead => parent_.CanRead;
+        public override bool CanSeek => parent_.CanSeek;
+        public override bool CanWrite => false;
 
         public override long Position
         {
@@ -44,13 +35,21 @@ namespace Archive
             }
         }
 
+        public OffsetStream(Stream parent, long offset, long length)
+        {
+            parent_ = parent;
+            start_ = offset;
+            length_ = length;
+            position_ = 0;
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             var position = start_ + position_;
 
             if (parent_.Position != position)
             {
-                if (parent_.CanRead)
+                if (parent_.CanSeek)
                 {
                     parent_.Seek(position, SeekOrigin.Begin);
                 }

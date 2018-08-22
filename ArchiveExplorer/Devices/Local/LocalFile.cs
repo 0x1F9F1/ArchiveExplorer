@@ -30,5 +30,19 @@ namespace Archive.Local
         {
             return info_.Open(mode, access, share);
         }
+
+        #if false
+        public override void CopyTo(IFile dest)
+        {
+            if (dest is LocalFile local)
+            {
+                info_.CopyTo(local.info_.FullName, true);
+            }
+            else
+            {
+                base.CopyTo(dest);
+            }
+        }
+        #endif
     }
 }
