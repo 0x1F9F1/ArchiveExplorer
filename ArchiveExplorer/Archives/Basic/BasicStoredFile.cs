@@ -4,14 +4,17 @@ namespace Archive.Common
 {
     public class BasicStoredFile : BasicFile
     {
+        public override string Name { get; }
+        public override IDevice Device { get; }
+        public override IDirectory Parent => Device.Parent;
+
         public BasicArchive Archive { get; }
 
         public long Offset { get; }
 
         public override long Length { get; }
-        public override string Name { get; }
-        public override IDevice Device { get; }
-        public override IDirectory Parent => Device.Parent;
+        public override FileLocation Location => Archive.Container.Location;
+        public override bool Compressed => Archive.Container.Compressed;
 
         public BasicStoredFile(BasicArchive archive, string name, long offset, long length)
         {

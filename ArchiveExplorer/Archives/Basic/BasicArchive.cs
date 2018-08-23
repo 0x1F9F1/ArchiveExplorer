@@ -9,14 +9,17 @@ namespace Archive.Common
         // TODO: Should this be a tree structure?
         protected readonly Dictionary<string, IFile> files_ = new Dictionary<string, IFile>();
 
-        // TODO: Remove this (just for testing)
-        public ICollection<string> FileNames => files_.Keys;
-
         public IFile Container { get; protected set; }
 
         public string Name => Container.Name;
         public IDevice Device => Container.Device;
         public IDirectory Parent => Container.Parent;
+
+        // TODO: Implement archive directories
+        public ICollection<IFile> Files => files_.Values;
+
+        // TODO: Implement archive directories
+        public ICollection<IDirectory> Directories => throw new NotImplementedException();
 
         public BasicArchive(IFile container, bool caseSensitive)
         {
@@ -60,6 +63,16 @@ namespace Archive.Common
         public void Preload()
         {
             // TODO: Replace Container with a version loaded completely into memory.
+        }
+
+        public bool RemoveFile(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveDirectory(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

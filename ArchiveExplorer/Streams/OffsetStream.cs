@@ -47,16 +47,13 @@ namespace Archive
         {
             var position = start_ + position_;
 
-            if (parent_.Position != position)
+            if (parent_.CanSeek)
             {
-                if (parent_.CanSeek)
-                {
-                    parent_.Seek(position, SeekOrigin.Begin);
-                }
-                else
-                {
-                    throw new NotSupportedException("Cannot Seek");
-                }
+                parent_.Seek(position, SeekOrigin.Begin);
+            }
+            else if (parent_.Position != position)
+            {
+                throw new NotSupportedException("Cannot Seek");
             }
 
             if (count + position_ > length_)

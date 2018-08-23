@@ -4,10 +4,13 @@ namespace Archive
 {
     public abstract class BasicFile : IFile
     {
-        public abstract long Length { get; }
         public abstract string Name { get; }
         public abstract IDevice Device { get; }
         public abstract IDirectory Parent { get; }
+
+        public abstract long Length { get; }
+        public abstract FileLocation Location { get; }
+        public abstract bool Compressed { get; }
 
         public abstract Stream Open(FileMode mode, FileAccess access, FileShare share);
 

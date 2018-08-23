@@ -20,6 +20,9 @@ namespace Archive.Local
             }
         }
 
+        public override FileLocation Location => FileLocation.Local;
+        public override bool Compressed => false;
+
         public LocalFile(FileInfo info, IDevice device)
         {
             info_ = info;

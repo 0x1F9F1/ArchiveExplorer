@@ -9,10 +9,13 @@ namespace Archive.Web
 
         public Uri UriPath { get; }
 
-        public override long Length => length_.Value;
         public override string Name => Path.GetFileName(UriPath.AbsolutePath);
         public override IDevice Device { get; }
         public override IDirectory Parent => null;
+
+        public override long Length => length_.Value;
+        public override FileLocation Location => FileLocation.Remote;
+        public override bool Compressed => false;
 
         public HttpFile(HttpDevice device, Uri path)
         {
@@ -40,7 +43,9 @@ namespace Archive.Web
                 return null;
             }
 
-            return new BufferedStream(new HttpStream(UriPath));
+            var result = new HttpStream(UriPath);
+
+            return new BufferedStream(result);
         }
     }
 }

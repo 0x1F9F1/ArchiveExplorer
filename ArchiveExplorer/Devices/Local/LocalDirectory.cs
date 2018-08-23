@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Archive.Local
 {
@@ -11,6 +13,9 @@ namespace Archive.Local
         public IDevice Device { get; }
 
         public IDirectory Parent => new LocalDirectory(info_.Parent, Device);
+
+        public ICollection<IFile> Files => throw new NotImplementedException();
+        public ICollection<IDirectory> Directories => throw new NotImplementedException();
 
         public LocalDirectory(DirectoryInfo info, IDevice device)
         {
@@ -40,6 +45,16 @@ namespace Archive.Local
             }
 
             return null;
+        }
+
+        public bool RemoveFile(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveDirectory(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

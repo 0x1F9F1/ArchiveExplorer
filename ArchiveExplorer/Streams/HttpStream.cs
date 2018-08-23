@@ -1,7 +1,8 @@
-﻿using Archive.Common;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
+using System.Net.Cache;
+using Archive.Common;
 
 namespace Archive.Web
 {
@@ -81,6 +82,8 @@ namespace Archive.Web
                     Path = response.ResponseUri;
                     length_ = response.ContentLength;
                 }
+
+                // TODO: Send "OPTIONS" Request?
             }
             catch (WebException ex)
             {
@@ -101,11 +104,11 @@ namespace Archive.Web
             finally
             {
                 var allow = headers?["Allow"];
-                CanRead = allow?.Contains("GET") ?? false;
-                CanWrite = allow?.Contains("PUT") ?? false;
+                CanRead = allow?.Contains("GET") ?? true;
+                CanWrite = allow?.Contains("PUT") ?? true;
 
                 var accept = headers?["Accept-Ranges"];
-                CanSeek = accept?.Equals("bytes") ?? false;
+                CanSeek = accept?.Contains("bytes") ?? false;
             }
         }
 
@@ -121,15 +124,10 @@ namespace Archive.Web
                 var request = (HttpWebRequest)WebRequest.Create(Path);
 
                 request.Method = "GET";
+                request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
+                request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
-                if (position_ == 0)
-                {
-                    request.AddRange(count);
-                }
-                else
-                {
-                    request.AddRange(position_, position_ + count - 1);
-                }
+                request.AddRange(position_, position_ + count - 1);
 
                 using (var response = (HttpWebResponse)request.GetResponse())
                 using (var stream = response.GetResponseStream())
@@ -162,6 +160,8 @@ namespace Archive.Web
                     var request = (HttpWebRequest)WebRequest.Create(Path);
 
                     request.Method = "GET";
+                    request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.CacheIfAvailable);
+                    request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
                     using (var response = (HttpWebResponse)request.GetResponse())
                     using (var stream = response.GetResponseStream())

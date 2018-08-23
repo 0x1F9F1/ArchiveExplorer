@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Archive.Local
@@ -8,6 +10,9 @@ namespace Archive.Local
         public string Name => "Local File System";
         public IDevice Device => this;
         public IDirectory Parent => null;
+
+        public ICollection<IFile> Files => throw new NotSupportedException();
+        public ICollection<IDirectory> Directories => throw new NotSupportedException();
 
         protected static Regex LocalPathRegex = new Regex(@"^[a-zA-Z]:[\\\/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -33,6 +38,16 @@ namespace Archive.Local
             var info = new FileInfo(path);
 
             return new LocalFile(info, this);
+        }
+
+        public bool RemoveFile(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveDirectory(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }
