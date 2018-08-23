@@ -16,7 +16,7 @@ namespace Archive.Local
 
         protected static Regex LocalPathRegex = new Regex(@"^[a-zA-Z]:[\\\/]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public IDevice QueryDevice(string path)
+        public IDevice QueryPath(string path)
         {
             if (LocalPathRegex.IsMatch(path))
             {

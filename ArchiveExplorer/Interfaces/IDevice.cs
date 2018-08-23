@@ -2,6 +2,6 @@
 {
     public interface IDevice : IDirectory
     {
-        IDevice QueryDevice(string path);
+        IDevice QueryPath(string path);
     }
 }

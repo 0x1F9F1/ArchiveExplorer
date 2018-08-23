@@ -23,7 +23,7 @@ namespace Archive
             {
                 var remoteFile = root.GetFile(@"https://www.sample-videos.com/zip/10mb.zip");
 
-                var archive = (BasicArchive) archives.Open(remoteFile);
+                var archive = archives.Open(remoteFile);
 
                 foreach (var archiveFile in archive.Files)
                 {

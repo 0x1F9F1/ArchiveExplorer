@@ -14,11 +14,11 @@ namespace Archive.Root
 
         protected List<IDevice> roots_ = new List<IDevice>();
 
-        public IDevice QueryDevice(string path)
+        public IDevice QueryPath(string path)
         {
             foreach (var root in roots_)
             {
-                var device = root.QueryDevice(path);
+                var device = root.QueryPath(path);
 
                 if (device != null)
                 {
@@ -31,14 +31,14 @@ namespace Archive.Root
 
         public IDirectory GetDirectory(string path)
         {
-            var device = QueryDevice(path);
+            var device = QueryPath(path);
 
             return device?.GetDirectory(path);
         }
 
         public IFile GetFile(string path)
         {
-            var device = QueryDevice(path);
+            var device = QueryPath(path);
 
             return device?.GetFile(path);
         }

@@ -31,7 +31,7 @@ namespace Archive.Web
                 || (uri.Scheme == Uri.UriSchemeHttps);
         }
 
-        public IDevice QueryDevice(string path)
+        public IDevice QueryPath(string path)
         {
             var uri = ParsePath(path);
 
